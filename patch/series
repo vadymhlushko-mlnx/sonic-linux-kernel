@@ -90,6 +90,7 @@ cisco-mtd-part.patch
 cisco-Enable-static-memory-reservation-for-OIRable-PCIe-de.patch
 cisco-add-support-for-ltc2979-chip.patch
 cisco-acpi-spi-nor.patch
+cisco-x86-gpio-config.patch
 
 #
 # Marvell platform patches for 4.19
