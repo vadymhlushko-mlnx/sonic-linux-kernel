@@ -85,6 +85,7 @@ net-sch_generic-fix-the-missing-new-qdisc-assignment.patch
 # Cisco patches for 4.19 kernel
 cisco-ds4424-null-of-node.patch
 cisco-hwmon-pmbus_core-pec-support-check.patch
+cisco-mdio-mux-support-acpi.patch
 
 #
 # Marvell platform patches for 4.19
