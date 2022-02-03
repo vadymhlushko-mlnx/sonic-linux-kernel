@@ -1,0 +1,78 @@
+mmc: add drive strength parameter for eMMC
+
+The original version of this patch (for kernel 3.18) added drive
+strength support for HS200. The drive strength value was specified
+through the mmc_drive_strength mmc module parameter and applied directly
+to setting EXT_CSD_HS_TIMING in mmc_select_hs200().
+
+Upstream commit cc4f414c885cd04f7227ad9bcd6b18fd78d718d9 (included in
+kernel 4.2) adds drive strength support to setting EXT_CSD_HS_TIMING (in
+drivers/mmc/core/mmc.c). This is done for both HS200 and HS400 and uses
+the drive_strength value in struct mmc_card. In the case of the PCI
+SDHCI driver and HS200 mode, this value is initialized in the following
+call stack:
+
+sdhci_pci_select_drive_strength   drivers/mmc/host/sdhci-pci-core.c
+sdhci_select_drive_strength       drivers/mmc/host/sdhci.c
+mmc_select_driver_type            drivers/mmc/core/mmc.c
+mmc_select_hs200                  drivers/mmc/core/mmc.c
+mmc_select_timing                 drivers/mmc/core/mmc.c
+mmc_init_card                     drivers/mmc/core/mmc.c
+mmc_attach_mmc                    drivers/mmc/core/mmc.c
+mmc_rescan_try_freq               drivers/mmc/core/core.c
+mmc_rescan                        drivers/mmc/core/core.c
+^
+'--- called as delayed work ((struct mmc_host).detect -- see mmc_alloc_host())
+
+The current version of this patch achieves similar functionality by
+relying on commit cc4f414c885cd04f7227ad9bcd6b18fd78d718d9 and adding a
+sdhci-pci module parameter. The parameter is called
+default_drive_strength and is used in sdhci_pci_select_drive_strength
+(instead of 0) when slot->select_drive_strength (which is the case for
+almost all PCI devices except Intel SPT eMMC).
+
+TLDR: To set a different drive strength than 0 (50 Ohms) to
+      EXT_CSD_HS_TIMING, use sdhci_pci.default_drive_strength instead of
+      mmc.mmc_drive_strength.
+
+Signed-off-by: edchien@arista.com
+Signed-off-by: Radu Rendec <rrendec@arista.com>
+Signed-off-by: Samuel Angebault <staphylo@arista.com>
+---
+ drivers/mmc/host/sdhci-pci-core.c |   12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/mmc/host/sdhci-pci-core.c b/drivers/mmc/host/sdhci-pci-core.c
+index cfb79476..d8fff703 100644
+--- a/drivers/mmc/host/sdhci-pci-core.c
++++ b/drivers/mmc/host/sdhci-pci-core.c
+@@ -32,6 +32,14 @@
+ #include "sdhci-pci.h"
+ #include "sdhci-pci-o2micro.h"
+ 
++/*
++ * Set the drive strength for eMMC. The default is 50 ohms. If required,
++ * we could change strength to 33 ohms. Per JEDEC spec section 10.5.4.1:
++ * 0x0 - 50 Ohms, 0x1 - 33 Ohms, 0x2 - 66 Ohms, 0x3 - 100 Ohms
++ */
++int default_drive_strength;
++module_param(default_drive_strength, int, 0444);
++
+ static int sdhci_pci_enable_dma(struct sdhci_host *host);
+ static void sdhci_pci_set_bus_width(struct sdhci_host *host, int width);
+ static void sdhci_pci_hw_reset(struct sdhci_host *host);
+@@ -1459,7 +1467,7 @@ static int sdhci_pci_select_drive_strength(struct sdhci_host *host,
+ 	struct sdhci_pci_slot *slot = sdhci_priv(host);
+ 
+ 	if (!slot->select_drive_strength)
+-		return 0;
++		return default_drive_strength;
+ 
+ 	return slot->select_drive_strength(host, card, max_dtr, host_drv,
+ 					   card_drv, drv_type);
+@@ -1926,3 +1934,5 @@ module_pci_driver(sdhci_driver);
+ MODULE_AUTHOR("Pierre Ossman <pierre@ossman.eu>");
+ MODULE_DESCRIPTION("Secure Digital Host Controller Interface PCI driver");
+ MODULE_LICENSE("GPL");
++
++MODULE_PARM_DESC(default_drive_strength, "Default eMMC drive strength");
