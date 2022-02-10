@@ -1,0 +1,29 @@
+From fb11280721d0a8f44dc436f730da74382cdd98ab Mon Sep 17 00:00:00 2001
+From: Samuel Angebault <staphylo@arista.com>
+Date: Thu, 10 Feb 2022 15:22:29 +0000
+Subject: Increase default kernel log buffer from 128K to 1M
+
+Though SONiC stores the dmesg in the syslog it create debugging challenges when
+/var/log can't be written to.
+Increasing the dmesg log size will prove useful in such circumpstances.
+
+---
+ debian/build/build_amd64_none_amd64/.config | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/debian/build/build_amd64_none_amd64/.config b/debian/build/build_amd64_none_amd64/.config
+index 6e5997f..0d2d4e9 100644
+--- a/debian/build/build_amd64_none_amd64/.config
++++ b/debian/build/build_amd64_none_amd64/.config
+@@ -142,7 +142,7 @@ CONFIG_RCU_STALL_COMMON=y
+ # CONFIG_RCU_EXPEDITE_BOOT is not set
+ CONFIG_BUILD_BIN2C=y
+ # CONFIG_IKCONFIG is not set
+-CONFIG_LOG_BUF_SHIFT=17
++CONFIG_LOG_BUF_SHIFT=20
+ CONFIG_LOG_CPU_MAX_BUF_SHIFT=12
+ CONFIG_NMI_LOG_BUF_SHIFT=13
+ CONFIG_HAVE_UNSTABLE_SCHED_CLOCK=y
+-- 
+2.11.0
+
