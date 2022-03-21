@@ -99,7 +99,7 @@ $(addprefix $(DEST)/, $(MAIN_TARGET)): $(DEST)/% :
 	stg repair
 	stg import -s ../patch/series
 
-	if [[ $(INCLUDE_SFLOW_DROPMON) == y ]]; then
+	if [[ $(enable_sflow_dropmon) == "y" ]]; then
 		$(warning sonic-linux-kernel apply dropmon patches)
 		stg repair
 		stg import -s ../patch/dropmon/series
