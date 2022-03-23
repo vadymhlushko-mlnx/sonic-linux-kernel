@@ -100,7 +100,6 @@ $(addprefix $(DEST)/, $(MAIN_TARGET)): $(DEST)/% :
 	stg import -s ../patch/series
 
 	if [[ $(ENABLE_SFLOW_DROPMON) == y ]]; then
-		$(warning sonic-linux-kernel apply dropmon patches)
 		stg repair
 		stg import -s ../patch/dropmon/series
 	fi
