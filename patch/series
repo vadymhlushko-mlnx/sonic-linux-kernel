@@ -140,6 +140,11 @@ cisco-Enable-static-memory-reservation-for-OIRable-PCIe-de.patch
 cisco-npu-disable-other-bars.patch
 cisco-hwmon-pmbus_core-pec-support-check.patch
 
+# sFlow + dropmon support
+0001-psample-Encapsulate-packet-metadata-in-a-struct.patch
+0002-psample-Add-additional-metadata-attributes.patch
+0003-psample-added-define-PSAMPLE_MD_EXTENDED_ATTR.patch
+
 #
 # Marvell platform patches for 4.19
 armhf_secondary_boot_online.patch
