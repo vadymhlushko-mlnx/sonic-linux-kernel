@@ -1,7 +1,10 @@
 From d025a830ef465ea7b560742028b46dfc5c334cf1 Mon Sep 17 00:00:00 2001
 From: Ido Schimmel <idosch@nvidia.com>
 Date: Sun, 14 Mar 2021 14:19:31 +0200
-Subject: [PATCH 2/3] psample: Add additional metadata attributes
+
+[backport of upstream commit 07e1a5809b595df6e125504dff6245cb2c8ed3de]
+
+Subject: [PATCH 2/2] psample: Add additional metadata attributes
 
 Extend psample to report the following attributes when available:
 
