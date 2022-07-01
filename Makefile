@@ -99,6 +99,12 @@ $(addprefix $(DEST)/, $(MAIN_TARGET)): $(DEST)/% :
 	stg repair
 	stg import -s ../patch/series
 
+	# sFlow + drop_monitor support
+	if [[ $(ENABLE_SFLOW_DROPMON) == y ]]; then
+		stg repair
+		stg import -s ../patch/drop-monitor/series
+	fi
+
 	# Optionally add/remove kernel options
 	if [ -f ../manage-config ]; then
 		../manage-config $(CONFIGURED_ARCH) $(CONFIGURED_PLATFORM)
