@@ -57,6 +57,10 @@ DSC_FILE_URL = "$(SOURCE_FILE_BASE_URL)/$(DSC_FILE)"
 DEBIAN_FILE_URL = "$(SOURCE_FILE_BASE_URL)/$(DEBIAN_FILE)"
 ORIG_FILE_URL = "$(SOURCE_FILE_BASE_URL)/$(ORIG_FILE)"
 
+ifndef ENABLE_SFLOW_DROPMON
+ENABLE_SFLOW_DROPMON=n
+endif
+
 $(addprefix $(DEST)/, $(MAIN_TARGET)): $(DEST)/% :
 	# Obtaining the Debian kernel source
 	rm -rf $(BUILD_DIR)
@@ -98,6 +102,12 @@ $(addprefix $(DEST)/, $(MAIN_TARGET)): $(DEST)/% :
 	# Learning new git repo head (above commit) by calling stg repair.
 	stg repair
 	stg import -s ../patch/series
+
+	# sFlow + drop_monitor support
+	if [[ $(ENABLE_SFLOW_DROPMON) == y ]]; then
+		stg repair
+		stg import -s ../patch/drop-monitor/series
+	fi
 
 	# Optionally add/remove kernel options
 	if [ -f ../manage-config ]; then
